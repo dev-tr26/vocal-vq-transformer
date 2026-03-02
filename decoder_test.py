@@ -1,5 +1,5 @@
 import os
-os.environ["WANDB_SYMLINK"] = "false"  # Windows fix
+os.environ["WANDB_SYMLINK"] = "false" 
 
 import torch
 import torchaudio
@@ -38,7 +38,7 @@ def main():
 
     mel_input = processor.process_audio(waveform).unsqueeze(0).to(device)  # [1, n_mels, T]
 
-    label_tensor = torch.tensor([0], device=device)  # adjust class if needed
+    label_tensor = torch.tensor([0], device=device)
     with torch.no_grad():
         mel_recon, _ = model(mel_input, label_tensor)
 

@@ -15,21 +15,15 @@
 #     device = torch.device("cpu")
 #     print("Using device:", device)
 
-#     # ---- LOAD CONFIG ----
 #     config = ModelConfig()
-
-#     # ---- INIT MODEL ----
 #     model = VocalSoundTransformer(config).to(device)
 
-#     # ---- LOAD TRAINED CHECKPOINT ----
 #     ckpt_path = "checkpoints/best_model.pt"
 #     checkpoint = torch.load(ckpt_path, map_location=device)
 
-#     # IMPORTANT: your checkpoint stores a dict
 #     model.load_state_dict(checkpoint["model"])
 #     print("Model weights loaded")
 
-#     # ---- GENERATE AUDIO ----
 #     label = 0  # change if you have multiple classes
 
 #     processor = AudioProcessor(config)

@@ -44,7 +44,6 @@ def train_model(model, train_loader, val_loader, config, device):
         train_loss /= len(train_loader)
         train_vq /= len(train_loader)
 
-        # -------- VALIDATION --------
         model.eval()
         val_loss = 0
         val_vq = 0
@@ -60,7 +59,6 @@ def train_model(model, train_loader, val_loader, config, device):
         val_loss /= len(val_loader)
         val_vq /= len(val_loader)
 
-        # -------- W&B LOGGING --------
         if config.use_wandb:
             wandb.log({
                 "epoch": epoch + 1,
@@ -71,7 +69,6 @@ def train_model(model, train_loader, val_loader, config, device):
                 "lr": optimizer.param_groups[0]["lr"]
             })
 
-        # -------- CHECKPOINT --------
         ckpt = {
             "epoch": epoch + 1,
             "model": model.state_dict(),

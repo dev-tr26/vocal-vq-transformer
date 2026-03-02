@@ -9,6 +9,7 @@ except ImportError:
     _WANDB_AVAILABLE = False
 
 
+
 def reduce(values):
     v = np.array(values)
     return {
@@ -59,12 +60,12 @@ class EvaluationMetrics:
     def _compute_mfcc(self, mel_spec):
         mel_spec = mel_spec.float()
 
-        # log_mel = torch.log(torch.abs(mel_spec) + 1e-9)
+        log_mel = torch.log(torch.abs(mel_spec) + 1e-9)
         # DCT-II via FFT trick
-        N = mel_spec.size(0)
+        N = log_mel.size(0)
 
         # Create mirrored signal
-        v = torch.cat([mel_spec, mel_spec.flip(dims=[0])], dim=0)
+        v = torch.cat([log_mel, log_mel.flip(dims=[0])], dim=0)
         V = torch.fft.fft(v, dim=0)
         # Take real part and scale
         mfcc = torch.real(V[:N])

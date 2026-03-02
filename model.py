@@ -31,8 +31,11 @@ class VectorQuantizer(nn.Module):
         )
         idx = dist.argmin(1)
         quant = self.emb(idx).view_as(x)
-        loss = F.mse_loss(quant.detach(), x)
-        return x + (quant-x).detach(), idx.view(x.shape[:2]), loss
+        commitment_loss = F.mse_loss(x, quant.detach()) # encoder commits 
+        codebook_loss  = F.mse_loss(quant, x.detach())  # codebook updates
+        loss = codebook_loss + 0.25 * commitment_loss
+        return x + (quant - x).detach(), idx.view(x.shape[:2]), loss
+
 
 class VocalSoundTransformer(nn.Module):
     def __init__(self, config):
@@ -59,12 +62,14 @@ class VocalSoundTransformer(nn.Module):
 
         vq_loss = 0
         residual = x
+        quantized = torch.zeros_like(x)  # accumulate quantized outputs
         codes = []
         for vq in self.vqs:
             q, c, l = vq(residual)
             residual = residual - q
+            quantized = quantized + q  # quantized representation 
             vq_loss += l
             codes.append(c)
 
-        x = self.tr(x)
+        x = self.tr(quantized)
         return self.out(x).transpose(1,2), vq_loss

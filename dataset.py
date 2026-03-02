@@ -16,14 +16,14 @@ def load_vocalsound_from_disk(data_dir, split):
     with open(json_path) as f:
         raw_data = json.load(f)
 
-    data = raw_data["data"]  # <-- FIX: extract the list from the "data" key
+    data = raw_data["data"]  
 
     labels = pd.read_csv(data_dir / "class_labels_indices_vs.csv")
     label_map = dict(zip(labels['mid'], labels['index']))
 
     entries = []
     for item in data:
-        wav = Path(item['wav'])  # you already have full path
+        wav = Path(item['wav']) 
         label = label_map[item['labels']]
         entries.append({"audio": wav, "label": label})
 
