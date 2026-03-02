@@ -1,0 +1,24 @@
+{
+  "os": "Windows-11-10.0.26200-SP0",
+  "python": "CPython 3.12.7",
+  "startedAt": "2025-12-23T07:01:42.104995Z",
+  "program": "c:\\Users\\trang\\Programing\\Vocal Sound Generation Model_BARK_LIKE\\main.py",
+  "codePath": "main.py",
+  "codePathLocal": "main.py",
+  "email": "rudra.trangadia.23co@iitram.ac.in",
+  "root": "C:\\Users\\trang\\Programing\\Vocal Sound Generation Model_BARK_LIKE",
+  "host": "RUDRA",
+  "executable": "C:\\Users\\trang\\AppData\\Local\\Programs\\Python\\Python312\\python.exe",
+  "cpu_count": 4,
+  "cpu_count_logical": 8,
+  "disk": {
+    "/": {
+      "total": "465967247360",
+      "used": "439026270208"
+    }
+  },
+  "memory": {
+    "total": "16804999168"
+  },
+  "writerId": "nbd97ho0hmrpqako424ip8r18488vc9q"
+}

@@ -1,0 +1,1 @@
+{"val/vq_loss":1.9427427849892913,"_runtime":16016,"val/recon_loss":53.266995857501854,"_timestamp":1.7664896624250758e+09,"_wandb":{"runtime":16016},"_step":0,"train/recon_loss":43.69333193353718,"lr":0.0001,"epoch":1,"train/vq_loss":2.0752857480923255}

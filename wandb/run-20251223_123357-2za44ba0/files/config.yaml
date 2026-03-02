@@ -1,0 +1,82 @@
+_wandb:
+    value:
+        cli_version: 0.21.0
+        e:
+            1aqojiagwk14pycxnpbucgszgrajl0xr:
+                codePath: main.py
+                codePathLocal: main.py
+                cpu_count: 4
+                cpu_count_logical: 8
+                disk:
+                    /:
+                        total: "465967247360"
+                        used: "439029170176"
+                email: rudra.trangadia.23co@iitram.ac.in
+                executable: C:\Users\trang\AppData\Local\Programs\Python\Python312\python.exe
+                host: RUDRA
+                memory:
+                    total: "16804999168"
+                os: Windows-11-10.0.26200-SP0
+                program: c:\Users\trang\Programing\Vocal Sound Generation Model_BARK_LIKE\main.py
+                python: CPython 3.12.7
+                root: C:\Users\trang\Programing\Vocal Sound Generation Model_BARK_LIKE
+                startedAt: "2025-12-23T07:03:57.249404Z"
+                writerId: 1aqojiagwk14pycxnpbucgszgrajl0xr
+        m: []
+        python_version: 3.12.7
+        t:
+            "1":
+                - 1
+                - 105
+            "2":
+                - 1
+                - 105
+            "3":
+                - 13
+                - 16
+            "4": 3.12.7
+            "5": 0.21.0
+            "8":
+                - 3
+            "12": 0.21.0
+            "13": windows-amd64
+batch_size:
+    value: 8
+codebook_size:
+    value: 1024
+dropout:
+    value: 0.1
+ff_dim:
+    value: 2048
+gradient_clip:
+    value: 1
+hidden_dim:
+    value: 512
+hop_length:
+    value: 256
+learning_rate:
+    value: 0.0001
+max_duration:
+    value: 4
+max_seq_len:
+    value: 1000
+n_fft:
+    value: 1024
+n_mels:
+    value: 80
+num_classes:
+    value: 6
+num_codebooks:
+    value: 2
+num_epochs:
+    value: 20
+num_heads:
+    value: 8
+num_layers:
+    value: 6
+sample_rate:
+    value: 16000
+use_wandb:
+    value: true
+warmup_steps:
+    value: 1000
