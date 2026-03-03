@@ -4,23 +4,6 @@ A deep learning project for **vocal sound reconstruction and generation** using 
 
 ---
 
-## Project Structure
-
-```
-├── config.py           # All hyperparameters and model configuration
-├── model.py            # VocalSoundTransformer architecture (Transformer + VQ)
-├── audio_utils.py      # Audio processing: mel-spectrogram & Griffin-Lim reconstruction
-├── dataset.py          # VocalSoundDataset & data loading utilities
-├── train.py            # Training loop with validation and checkpointing
-├── evaluation.py       # Comprehensive audio quality metrics
-├── generation.py       # Inference: generate vocal sounds from class labels
-├── decoder_test.py     # Test reconstruction on a real audio file
-├── data_cleaning.py    # Fix JSON dataset file paths for local setup
-└── checkpoints/        # Saved model checkpoints (auto-created during training)
-```
-
----
-
 ##  Model Architecture
 
 **`VocalSoundTransformer`** (`model.py`) is a Transformer-based autoencoder:
@@ -30,146 +13,145 @@ A deep learning project for **vocal sound reconstruction and generation** using 
 - **Positional Encoding** — Sinusoidal positional encodings
 - **Transformer Encoder** — Multi-head self-attention (configurable layers/heads)
 - **Residual Vector Quantization (RVQ)** — Multiple VQ codebooks applied sequentially on residuals for discrete latent representation
-- **Output Projection** — Linear layer maps hidden dim → mel-spectrogram bins
+- **Output Projection** — Linear layer maps hidden dim -> mel-spectrogram bins
 
 ```
-Mel Input → Linear → Class Embed + Pos Enc → Transformer → RVQ → Transformer → Linear → Mel Recon
+Mel Input -> Linear -> Class Embed + Pos Enc -> Transformer -> RVQ -> Transformer -> Linear -> Mel Recon
 ```
 
 ### Supported Vocal Sound Classes
 
-| Index | Class             |
-|-------|-------------------|
-| 0     | Laughter          |
-| 1     | Sigh              |
-| 2     | Cough             |
-| 3     | Throat Clearing   |
-| 4     | Sneeze            |
-| 5     | Sniff             |
+0. Laughter
+1. Sigh  
+2. Cough 
+3. Throat Clearing
+4. Sniff 
+5. Sneeze
 
 ---
 
-## Configuration
 
-All settings are centralized in `config.py` via the `ModelConfig` dataclass:
+- Dataset [VocalSound dataset](https://github.com/YuanGongND/vocalsound)
 
-| Category   | Parameter        | Default  | Description                        |
-|------------|------------------|----------|------------------------------------|
-| Audio      | `sample_rate`    | 16000    | Audio sample rate (Hz)             |
-| Audio      | `n_mels`         | 80       | Number of mel filterbanks          |
-| Audio      | `n_fft`          | 1024     | FFT window size                    |
-| Audio      | `hop_length`     | 256      | STFT hop length                    |
-| Audio      | `max_duration`   | 10.0     | Max audio clip length (seconds)    |
-| Model      | `hidden_dim`     | 512      | Transformer hidden dimension       |
-| Model      | `num_layers`     | 6        | Number of Transformer encoder layers |
-| Model      | `num_heads`      | 8        | Number of attention heads          |
-| Model      | `ff_dim`         | 2048     | Feed-forward dimension             |
-| Model      | `dropout`        | 0.1      | Dropout rate                       |
-| VQ         | `num_codebooks`  | 2        | Number of RVQ codebooks            |
-| VQ         | `codebook_size`  | 1024     | Entries per codebook               |
-| Training   | `batch_size`     | 8        | Training batch size                |
-| Training   | `learning_rate`  | 1e-4     | AdamW learning rate                |
-| Training   | `num_epochs`     | 20       | Total training epochs              |
-| Training   | `gradient_clip`  | 1.0      | Gradient clipping norm             |
+- split files (`tr.json`, `val.json`, `te.json`) to use local audio paths.
 
----
+- Checkpoints are saved to `checkpoints/` after each epoch. The best model (lowest validation loss) is saved as `checkpoints/best_model.pt`.
 
-### 1. Install Dependencies
-
-```bash
-pip install torch torchaudio numpy pandas wandb tqdm
-```
-
-### 2. Prepare the Dataset
-
-Download the [VocalSound dataset](https://github.com/YuanGongND/vocalsound) and update the paths in `data_cleaning.py`:
-
-```python
-json_dir  = Path("path/to/datafiles")
-audio_base = Path("path/to/audio_16k")
-```
-
-Then run the path-fixing script:
-
-```bash
-python data_cleaning.py
-```
-
-This updates the `.json` split files (`tr.json`, `val.json`, `te.json`) to use your local audio paths.
-
-### 3. Train the Model
-
-```python
-from config import ModelConfig
-from model import VocalSoundTransformer
-from dataset import VocalSoundDataset
-from train import train_model
-from torch.utils.data import DataLoader
-import torch
-
-config = ModelConfig()
-device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
-
-train_ds = VocalSoundDataset("train", config, data_dir="path/to/VocalSound")
-val_ds   = VocalSoundDataset("val",   config, data_dir="path/to/VocalSound")
-
-train_loader = DataLoader(train_ds, batch_size=config.batch_size, shuffle=True)
-val_loader   = DataLoader(val_ds,   batch_size=config.batch_size)
-
-model = VocalSoundTransformer(config).to(device)
-train_model(model, train_loader, val_loader, config, device)
-```
-
-Checkpoints are saved to `checkpoints/` after each epoch. The best model (lowest validation loss) is saved as `checkpoints/best_model.pt`.
-
-### 4. Generate a Vocal Sound
-
-```python
-from generation import generate_vocal_sound
-from audio_utils import AudioProcessor
-import torchaudio, torch
-
-# label: 0=laughter, 1=sigh, 2=cough, 3=throat_clearing, 4=sneeze, 5=sniff
-mel = generate_vocal_sound(model, label=0, config=config, device=device)
-audio = AudioProcessor(config).reconstruct_audio(mel)
-torchaudio.save("output.wav", audio.unsqueeze(0), sample_rate=config.sample_rate)
-```
-
-### 5. Test Reconstruction on a Real File
-
-```bash
-python decoder_test.py
-```
-
-Edit the `SAMPLE_FILE` path inside `decoder_test.py` to point to your `.wav` file. The reconstructed audio is saved as `reconstructed.wav`.
-
----
 
 ## Evaluation
 
-The `evaluation.py` module computes a comprehensive set of audio quality metrics:
 
-| Metric                    | Description                                          |
-|---------------------------|------------------------------------------------------|
-| **SNR (dB)**              | Signal-to-Noise Ratio                                |
-| **PSNR (dB)**             | Peak Signal-to-Noise Ratio                           |
-| **MCD (dB)**              | Mel-Cepstral Distortion                              |
-| **Spectral Convergence**  | Frobenius norm ratio of spectral error               |
-| **Log-Spectral Distance** | RMS distance in log-spectral domain                  |
-| **Codebook Perplexity**   | Diversity measure per VQ codebook                    |
-| **Codebook Usage (%)**    | Percentage of codebook entries actively used         |
-| **Reconstruction Loss**   | MSE between input and reconstructed mel-spectrogram  |
-| **VQ Loss**               | Vector quantization commitment loss                  |
 
-Metrics are reported globally and broken down **per vocal sound class**. Results can optionally be logged to [Weights & Biases](https://wandb.ai/).
+
+# Results
+
+Final evaluation metrics after training (global + per-class breakdown).
 
 ---
 
-##  Experiment Tracking
+##  Overall Evaluation (All Classes)
 
-Set `use_wandb: True` in `ModelConfig` to enable W&B logging. Training logs include per-epoch train/val reconstruction loss, VQ loss, and learning rate. Evaluation logs include all quality metrics per class.
+| Metric                    | Value   |
+| ------------------------- | ------- |
+| **Reconstruction Loss**   | 52.59   |
+| **VQ Loss**               | 1.9427  |
+| **PSNR (dB)**             | 8.62    |
+| **SNR (dB)**              | 3.38    |
+| **Log-Spectral Distance** | 1.129   |
+| **Spectral Convergence**  | 0.720   |
+| **MCD (dB)**              | 5826.74 |
 
 ---
+
+# Per-Class Metrics
+
+---
+
+## Class 0 — Laughter
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 56.71   | 22.26   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 8.14    | 2.03    |
+| SNR (dB)              | 2.35    | 3.18    |
+| Log-Spectral Distance | 1.257   | 0.257   |
+| Spectral Convergence  | 0.823   | 0.371   |
+| MCD (dB)              | 6210.08 | 1594.75 |
+
+---
+
+## Class 1 — Sigh
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 44.94   | 21.93   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 9.27    | 2.20    |
+| SNR (dB)              | 3.79    | 2.84    |
+| Log-Spectral Distance | 1.133   | 0.255   |
+| Spectral Convergence  | 0.686   | 0.277   |
+| MCD (dB)              | 5336.18 | 1629.12 |
+
+---
+
+## Class 2 — Cough
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 53.50   | 21.19   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 8.21    | 2.03    |
+| SNR (dB)              | 2.79    | 3.03    |
+| Log-Spectral Distance | 1.135   | 0.225   |
+| Spectral Convergence  | 0.776   | 0.331   |
+| MCD (dB)              | 5859.02 | 1548.31 |
+
+---
+
+## Class 3 — Throat Clearing
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 58.17   | 22.04   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 8.29    | 1.76    |
+| SNR (dB)              | 3.34    | 2.52    |
+| Log-Spectral Distance | 1.113   | 0.203   |
+| Spectral Convergence  | 0.715   | 0.272   |
+| MCD (dB)              | 6172.04 | 1611.32 |
+
+---
+
+## Class 4 — Sneeze
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 50.76   | 22.42   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 8.99    | 1.85    |
+| SNR (dB)              | 4.31    | 2.28    |
+| Log-Spectral Distance | 0.990   | 0.217   |
+| Spectral Convergence  | 0.634   | 0.217   |
+| MCD (dB)              | 5624.20 | 1666.05 |
+
+---
+
+## Class 5 — Sniff
+
+| Metric                | Mean    | Std     |
+| --------------------- | ------- | ------- |
+| Reconstruction Loss   | 51.46   | 23.52   |
+| VQ Loss               | 1.9427  | ~0      |
+| PSNR (dB)             | 8.83    | 1.98    |
+| SNR (dB)              | 3.70    | 2.63    |
+| Log-Spectral Distance | 1.145   | 0.250   |
+| Spectral Convergence  | 0.689   | 0.277   |
+| MCD (dB)              | 5757.78 | 1724.64 |
+
+---
+
+
 
 ##  Key Design Choices
 
@@ -177,3 +159,32 @@ Set `use_wandb: True` in `ModelConfig` to enable W&B logging. Training logs incl
 - **Class Conditioning** — Learned class embeddings injected at every sequence position guide the model to generate class-specific reconstructions.
 - **Griffin-Lim Vocoder** — Used for phase reconstruction when converting mel-spectrograms back to waveforms (64 iterations).
 - **Dual Transformer Pass** — The encoder runs before *and* after VQ quantization, letting the model refine quantized representations.
+
+
+### Limitations
+
+---
+
+## Mel-Cepstral Distortion (MCD)
+
+- Important: The reported MCD values are currently computed incorrectly and should not be interpreted as physically meaningful. 
+
+## Codebook Usage Not Logged
+
+Although VQ loss is reported, the following are not currently tracked:
+
+- Codebook usage percentage
+- Codebook perplexity
+- Number of active embeddings
+
+Without these metrics, codebook health and latent utilization cannot be fully assessed.
+
+## Metric Interpretation
+
+- Reconstruction loss is computed in mel-spectrogram space (MSE).
+- PSNR and SNR are waveform-domain metrics.
+- Log-Spectral Distance and Spectral Convergence operate in the frequency domain.
+
+Because different metrics operate in different domains (mel vs waveform vs spectrum), they may not correlate perfectly with perceived audio quality.
+
+--- 

@@ -1,0 +1,11 @@
+| Metric                    | Description                                          |
+|---------------------------|------------------------------------------------------|
+| **SNR (dB)**              | Signal-to-Noise Ratio                                |
+| **PSNR (dB)**             | Peak Signal-to-Noise Ratio                           |
+| **MCD (dB)**              | Mel-Cepstral Distortion                              |
+| **Spectral Convergence**  | Frobenius norm ratio of spectral error               |
+| **Log-Spectral Distance** | RMS distance in log-spectral domain                  |
+| **Codebook Perplexity**   | Diversity measure per VQ codebook                    |
+| **Codebook Usage (%)**    | Percentage of codebook entries actively used         |
+| **Reconstruction Loss**   | MSE between input and reconstructed mel-spectrogram  |
+| **VQ Loss**               | Vector quantization commitment loss                  |
