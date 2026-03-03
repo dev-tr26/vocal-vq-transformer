@@ -1,12 +1,14 @@
 #  VocalSound Transformer
 
-A deep learning project for **vocal sound reconstruction and generation** using a Transformer-based autoencoder with Vector Quantization (VQ). Trained on the [VocalSound dataset](https://github.com/YuanGongND/vocalsound), the model learns to encode, compress, and reconstruct six categories of human vocal sounds from mel-spectrograms.
+- A deep learning project for **vocal sound reconstruction and generation** using a Transformer-based autoencoder with Vector Quantization (VQ). 
+
+- Trained on the [VocalSound dataset](https://github.com/YuanGongND/vocalsound), the model learns to encode, compress, and reconstruct six categories of human vocal sounds from mel-spectrograms.
 
 ---
 
 ##  Model Architecture
 
-**`VocalSoundTransformer`** (`model.py`) is a Transformer-based autoencoder:
+**`VocalSoundTransformer`** is a Transformer-based autoencoder:
 
 - **Input Projection** — Linear layer maps mel-spectrogram bins → hidden dimension
 - **Class Conditioning** — Learned class embeddings added to the sequence
@@ -38,12 +40,10 @@ Mel Input -> Linear -> Class Embed + Pos Enc -> Transformer -> RVQ -> Transforme
 - Checkpoints are saved to `checkpoints/` after each epoch. The best model (lowest validation loss) is saved as `checkpoints/best_model.pt`.
 
 
-## Evaluation
 
 
 
-
-# Results
+## Results
 
 Final evaluation metrics after training (global + per-class breakdown).
 
@@ -161,15 +161,15 @@ Final evaluation metrics after training (global + per-class breakdown).
 - **Dual Transformer Pass** — The encoder runs before *and* after VQ quantization, letting the model refine quantized representations.
 
 
-### Limitations
+## Limitations
 
 ---
 
-## Mel-Cepstral Distortion (MCD)
+### Mel-Cepstral Distortion (MCD)
 
 - Important: The reported MCD values are currently computed incorrectly and should not be interpreted as physically meaningful. 
 
-## Codebook Usage Not Logged
+### Codebook Usage Not Logged
 
 Although VQ loss is reported, the following are not currently tracked:
 
@@ -179,7 +179,7 @@ Although VQ loss is reported, the following are not currently tracked:
 
 Without these metrics, codebook health and latent utilization cannot be fully assessed.
 
-## Metric Interpretation
+### Metric Interpretation
 
 - Reconstruction loss is computed in mel-spectrogram space (MSE).
 - PSNR and SNR are waveform-domain metrics.
