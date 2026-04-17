@@ -1,6 +1,6 @@
 #  VocalSound Transformer
 
-- A deep learning project for **vocal sound reconstruction and generation** using a Transformer-based autoencoder with Vector Quantization (VQ). 
+- A deep learning project for **vocal sound reconstruction and generation** using a Transformer-based autoencoder with Vector Quantization (VQ).  It is just a small experiment .
 
 - Trained on the [VocalSound dataset](https://github.com/YuanGongND/vocalsound), the model learns to encode, compress, and reconstruct six categories of human vocal sounds from mel-spectrograms.
 
